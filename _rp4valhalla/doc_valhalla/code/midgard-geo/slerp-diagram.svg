@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="710" viewBox="0 0 900 710"
+     font-family="'Noto Sans CJK SC','Source Han Sans SC','Microsoft YaHei','PingFang SC','WenQuanYi Micro Hei',sans-serif">
+  <rect x="0" y="0" width="900" height="710" fill="#ffffff"/>
+  <rect x="1" y="1" width="898" height="708" rx="12" fill="none" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- ===== 整体标题 ===== -->
+  <text x="40" y="36" font-size="20" font-weight="700" fill="#0f172a">球面线性插值（Slerp）与 remaining 记账</text>
+
+  <!-- ===== 面板 A ===== -->
+  <text x="40" y="70" font-size="16" font-weight="700" fill="#0f172a">① Slerp：沿大圆按圆心角前进</text>
+  <text x="40" y="92" font-size="12" fill="#475569">大圆截面，O 为球心</text>
+
+  <!-- 球面圆 -->
+  <circle cx="300" cy="270" r="160" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+
+  <!-- 大圆弧 P1 -> P2（sweep=1 表示屏幕上的顺时针，即越过顶部） -->
+  <path d="M 149.65 215.28 A 160 160 0 0 1 431.06 178.23"
+        fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- 球内弦（a+b=1 的线性组合） -->
+  <line x1="149.65" y1="215.28" x2="431.06" y2="178.23"
+        stroke="#64748b" stroke-width="1.6" stroke-dasharray="6 5"/>
+
+  <!-- 半径 -->
+  <line x1="300" y1="270" x2="149.65" y2="215.28" stroke="#94a3b8" stroke-width="1.6"/>
+  <line x1="300" y1="270" x2="431.06" y2="178.23" stroke="#94a3b8" stroke-width="1.6"/>
+  <line x1="300" y1="270" x2="245.28" y2="119.65" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="3 4"/>
+
+  <!-- d 张角（r=118，点线） -->
+  <path d="M 189.12 229.64 A 118 118 0 0 1 396.66 202.32"
+        fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="2 5"/>
+
+  <!-- alpha 张角（r=50） -->
+  <path d="M 253.02 252.90 A 50 50 0 0 1 282.90 223.02"
+        fill="none" stroke="#ea580c" stroke-width="2.2"/>
+  <!-- d - alpha 张角（r=50） -->
+  <path d="M 282.90 223.02 A 50 50 0 0 1 340.96 241.32"
+        fill="none" stroke="#f59e0b" stroke-width="2.2"/>
+
+  <!-- 关键点 -->
+  <circle cx="300" cy="270" r="4.5" fill="#0f172a"/>
+  <circle cx="149.65" cy="215.28" r="6" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="431.06" cy="178.23" r="6" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="245.28" cy="119.65" r="7" fill="#ea580c" stroke="#ffffff" stroke-width="2"/>
+
+  <!-- 标签 -->
+  <text x="300" y="296" font-size="14" font-weight="700" fill="#0f172a" text-anchor="middle">O</text>
+  <text x="132" y="236" font-size="15" font-weight="700" fill="#1e40af" text-anchor="end"
+        stroke="#ffffff" stroke-width="3.5" paint-order="stroke">P₁</text>
+  <text x="448" y="174" font-size="15" font-weight="700" fill="#1e40af"
+        stroke="#ffffff" stroke-width="3.5" paint-order="stroke">P₂</text>
+  <text x="258" y="102" font-size="14" font-weight="700" fill="#c2410c"
+        stroke="#ffffff" stroke-width="3.5" paint-order="stroke">P（插值点）</text>
+
+  <text x="352" y="158" font-size="15" font-style="italic" fill="#64748b"
+        stroke="#ffffff" stroke-width="3.5" paint-order="stroke">d</text>
+  <text x="256" y="226" font-size="13" font-weight="700" fill="#c2410c"
+        stroke="#ffffff" stroke-width="3.5" paint-order="stroke">α</text>
+  <text x="322" y="216" font-size="13" font-weight="700" fill="#b45309"
+        stroke="#ffffff" stroke-width="3.5" paint-order="stroke">d − α</text>
+  <text x="240" y="190" font-size="12" fill="#475569" text-anchor="middle"
+        stroke="#ffffff" stroke-width="3.5" paint-order="stroke">a+b=1：弦（球内）</text>
+
+  <!-- 公式面板 -->
+  <text x="500" y="122" font-size="15" font-weight="700" fill="#0f172a">Slerp 权重</text>
+  <text x="500" y="152" font-size="15" fill="#0f172a">P = a·P₁ + b·P₂</text>
+  <text x="500" y="178" font-size="14" fill="#0f172a">a = sin(d − α) / sin d</text>
+  <text x="500" y="204" font-size="14" fill="#0f172a">b = sin(α) / sin d</text>
+  <text x="500" y="234" font-size="14" font-weight="700" fill="#c2410c">0 &lt; α &lt; d 时 a + b &gt; 1</text>
+  <text x="500" y="260" font-size="14" fill="#0f172a">a² + b² + 2ab·cos d = 1</text>
+  <text x="500" y="286" font-size="14" fill="#15803d">⇒ P 自动落在球面上，无需归一化</text>
+  <text x="500" y="318" font-size="13" fill="#334155">α = remaining：本次前进的圆心角</text>
+  <text x="500" y="344" font-size="13" fill="#334155">d = 当前点到 P₂ 的剩余大圆夹角</text>
+  <text x="500" y="370" font-size="13" fill="#334155">d − α = 到 P₂ 还剩的夹角</text>
+  <text x="500" y="396" font-size="13" fill="#334155">弧长 = α·R；R = 1 时弧长 = α</text>
+  <text x="500" y="428" font-size="12" fill="#64748b">虚线 = a+b=1 的弦（球内）</text>
+
+  <!-- 分隔线 -->
+  <line x1="30" y1="470" x2="870" y2="470" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- ===== 面板 B ===== -->
+  <text x="40" y="502" font-size="16" font-weight="700" fill="#0f172a">② remaining：跨线段补足欠量</text>
+  <text x="40" y="528" font-size="12" fill="#475569">resolution = 100（示意单位）；橙色圆点 = 采样点，菱形 = 原始拐点</text>
+
+  <!-- 弧长轴 -->
+  <line x1="60" y1="600" x2="640" y2="600" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- 采样点 -->
+  <circle cx="180" cy="600" r="5" fill="#ea580c" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="280" cy="600" r="5" fill="#ea580c" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="380" cy="600" r="5" fill="#ea580c" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="480" cy="600" r="5" fill="#ea580c" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="580" cy="600" r="5" fill="#ea580c" stroke="#ffffff" stroke-width="1.5"/>
+
+  <!-- 原始拐点 -->
+  <rect x="75" y="595" width="10" height="10" fill="#64748b" transform="rotate(45 80 600)"/>
+  <rect x="305" y="595" width="10" height="10" fill="#0f172a" transform="rotate(45 310 600)"/>
+  <rect x="605" y="595" width="10" height="10" fill="#0f172a" transform="rotate(45 610 600)"/>
+
+  <!-- 跨拐点记账：280 -> 310 剩 30，310 -> 380 跨段 70 -->
+  <path d="M 280 588 L 280 562 L 380 562 L 380 588" fill="none" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="330" y="552" font-size="12" font-weight="700" fill="#c2410c" text-anchor="middle">剩 30 + 跨段 70 = 100</text>
+
+  <!-- 间距标注 -->
+  <g font-size="11" fill="#64748b" text-anchor="middle">
+    <text x="130" y="622">100</text>
+    <text x="230" y="622">100</text>
+    <text x="295" y="622" fill="#c2410c">30</text>
+    <text x="345" y="622" fill="#c2410c">70</text>
+    <text x="430" y="622">100</text>
+    <text x="530" y="622">100</text>
+    <text x="595" y="622">30</text>
+  </g>
+
+  <!-- 顶点标注 -->
+  <g font-size="12" fill="#0f172a" text-anchor="middle">
+    <text x="80" y="646">A（起点）</text>
+    <text x="310" y="646">B（拐点）</text>
+    <text x="610" y="646">C（拐点）</text>
+  </g>
+
+  <text x="60" y="684" font-size="12" fill="#475569">跨拐点时 remaining 不清零：第 2 个采样点距 B 还剩 30，余下 70 从 B 继续量 → 到下一采样点正好 30 + 70 = 100。</text>
+</svg>

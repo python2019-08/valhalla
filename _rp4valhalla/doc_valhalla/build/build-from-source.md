@@ -301,22 +301,28 @@ Tip
 
 
 
-``` {#__code_21}
+```sh
 # download some data and make tiles out of it
 # NOTE: you can feed multiple extracts into pbfgraphbuilder
 wget https://download.geofabrik.de/europe/switzerland-latest.osm.pbf https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf
+
 # get the config and setup
 mkdir -p valhalla_tiles
 valhalla_build_config --mjolnir-tile-dir ${PWD}/valhalla_tiles --mjolnir-tile-extract ${PWD}/valhalla_tiles.tar --mjolnir-timezone ${PWD}/valhalla_tiles/timezones.sqlite --mjolnir-admin ${PWD}/valhalla_tiles/admins.sqlite > valhalla.json
+
 # build timezones.sqlite to support time-dependent routing
 valhalla_build_timezones > valhalla_tiles/timezones.sqlite
+
 # build admins.sqlite to support admin-related properties such as access restrictions, driving side, ISO codes etc
 valhalla_build_admins -c valhalla.json switzerland-latest.osm.pbf liechtenstein-latest.osm.pbf
+
 # build routing tiles
 valhalla_build_tiles -c valhalla.json switzerland-latest.osm.pbf liechtenstein-latest.osm.pbf
+
 # tar it up for running the server
 # either run this to build a tile index for faster graph loading times
 valhalla_build_extract -c valhalla.json -v
+
 # or simply tar up the tiles
 find valhalla_tiles | sort -n | tar cf valhalla_tiles.tar --no-recursion -T -
 
@@ -327,8 +333,55 @@ firefox demos/routing/index-internal.html &
 
 # start up the server
 valhalla_service valhalla.json 1
-# curl it directly if you like:
-curl http://localhost:8002/route --data '{"locations":[{"lat":47.365109,"lon":8.546824,"type":"break","city":"Zürich","state":"Altstadt"},{"lat":47.108878,"lon":8.394801,"type":"break","city":"6037 Root","state":"Untere Waldstrasse"}],"costing":"auto","directions_options":{"units":"miles"}}' | jq '.'
 
-#HAVE FUN!
+# curl it directly if you like:
+curl http://localhost:8002/route --data '{"locations":[{"lat":47.365109,"lon":8.546824,"type":"break","city":"Zürich","state":"Altstadt"},{"lat":47.108878,"lon":8.394801,"type":"break","city":"6037 Root","state":"Untere Waldstrasse"}],"costing":"auto","directions_options":{"units":"miles"}}' | jq '.' 
+``` 
+
+
+## my steps
+
+```sh
+# download some data and make tiles out of it
+# NOTE: you can feed multiple extracts into pbfgraphbuilder
+cd _data
+wget https://download.geofabrik.de/europe/switzerland-latest.osm.pbf https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf
+
+# get the config and setup
+REPO_Path=/mnt/a2disk/a2/zdev/nv/osrm/valhalla
+bdExePath=${REPO_Path}/build_vcpkg
+mkdir -p _databd/valhalla_tiles
+
+${bdExePath}/valhalla_build_config \
+  --mjolnir-tile-dir ${REPO_Path}/_databd/valhalla_tiles \
+  --mjolnir-tile-extract ${REPO_Path}/_databd/valhalla_tiles.tar \
+  --mjolnir-timezone ${REPO_Path}/_databd/valhalla_tiles/timezones.sqlite \
+  --mjolnir-admin ${REPO_Path}/_databd/valhalla_tiles/admins.sqlite > ${REPO_Path}/_databd/valhalla.json
+
+# build timezones.sqlite to support time-dependent routing
+${bdExePath}/valhalla_build_timezones > ${REPO_Path}/_databd/valhalla_tiles/timezones.sqlite
+
+# build admins.sqlite to support admin-related properties such as access restrictions, driving side, ISO codes etc
+${bdExePath}/valhalla_build_admins -c ${REPO_Path}/_databd/valhalla.json switzerland-latest.osm.pbf liechtenstein-latest.osm.pbf
+
+# build routing tiles
+${bdExePath}/valhalla_build_tiles -c ${REPO_Path}/_databd/valhalla.json switzerland-latest.osm.pbf liechtenstein-latest.osm.pbf
+
+# tar it up for running the server
+# either run this to build a tile index for faster graph loading times
+${bdExePath}/valhalla_build_extract -c ${REPO_Path}/_databd/valhalla.json -v
+
+# or simply tar up the tiles
+find valhalla_tiles | sort -n | tar cf valhalla_tiles.tar --no-recursion -T -
+
+# grab the demos repo and open up the point and click routing sample
+git clone --depth=1 --recurse-submodules --single-branch --branch=gh-pages https://github.com/valhalla/demos.git
+firefox demos/routing/index-internal.html &
+# NOTE: set the environment pulldown to 'localhost' to point it at your own server
+
+# start up the server
+${bdExePath}/valhalla_service ${REPO_Path}/_databd/valhalla.json 1
+
+# curl it directly if you like:
+curl http://localhost:8002/route --data '{"locations":[{"lat":47.365109,"lon":8.546824,"type":"break","city":"Zürich","state":"Altstadt"},{"lat":47.108878,"lon":8.394801,"type":"break","city":"6037 Root","state":"Untere Waldstrasse"}],"costing":"auto","directions_options":{"units":"miles"}}' | jq '.' 
 ``` 

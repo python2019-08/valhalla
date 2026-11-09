@@ -1,3 +1,4 @@
+# cmakepresets_build_bash.md created by Abner 
 ```bash
 # 禁用registry功能，只用本地端口库
 export VCPKG_FEATURE_FLAGS=-registries

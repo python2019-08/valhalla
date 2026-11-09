@@ -59,3 +59,5 @@ proto/python/src
 proto/typescript/valhallajs-proto-*
 
 _data/ 
+_databd/
+build_vcpkg/
